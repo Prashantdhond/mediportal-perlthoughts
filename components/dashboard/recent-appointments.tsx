@@ -2,17 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, AlertCircle, FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { PrescriptionModal } from './prescription-modal';
 import { Appointment } from '@/lib/types';
 import { mockApi } from '@/lib/mock-api';
 
 export function RecentAppointments() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -38,6 +41,16 @@ export function RecentAppointments() {
     } catch (error) {
       console.error('Failed to update appointment:', error);
     }
+  };
+
+  const handleCreatePrescription = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setIsPrescriptionModalOpen(true);
+  };
+
+  const handlePrescriptionSuccess = () => {
+    // Refresh appointments or show success message
+    console.log('Prescription created successfully');
   };
 
   const getStatusIcon = (status: Appointment['status']) => {
@@ -103,6 +116,19 @@ export function RecentAppointments() {
                       <p className="text-sm text-gray-500">
                         {format(new Date(`${appointment.date}T${appointment.time}`), 'MMM d, yyyy - h:mm a')}
                       </p>
+
+                      {appointment.status === 'completed' && (
+                        <div className="flex flex-col space-y-2 ml-4">
+                          <Button
+                            size="sm"
+                            onClick={() => handleCreatePrescription(appointment)}
+                            className="bg-green-600 hover:bg-green-700"
+                          >
+                            <FileText className="h-4 w-4 mr-1" />
+                            Create Prescription
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <p className="text-sm text-gray-600 mt-1 truncate">
@@ -143,6 +169,16 @@ export function RecentAppointments() {
           )}
         </div>
       </CardContent>
+
+      <PrescriptionModal
+        appointment={selectedAppointment}
+        isOpen={isPrescriptionModalOpen}
+        onClose={() => {
+          setIsPrescriptionModalOpen(false);
+          setSelectedAppointment(null);
+        }}
+        onSuccess={handlePrescriptionSuccess}
+      />
     </Card>
   );
 }

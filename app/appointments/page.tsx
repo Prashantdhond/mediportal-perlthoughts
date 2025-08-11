@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { Calendar, Clock, Phone, Mail, Search } from 'lucide-react';
+import { Calendar, Clock, Phone, Mail, Search, FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ProtectedRoute } from '@/components/layout/protected-route';
 import { Navbar } from '@/components/layout/navbar';
+import { PrescriptionModal } from '@/components/dashboard/prescription-modal';
 import { Appointment } from '@/lib/types';
 import { mockApi } from '@/lib/mock-api';
 
@@ -19,6 +20,8 @@ export default function AppointmentsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -44,6 +47,15 @@ export default function AppointmentsPage() {
     } catch (error) {
       console.error('Failed to update appointment:', error);
     }
+  };
+
+  const handleCreatePrescription = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setIsPrescriptionModalOpen(true);
+  };
+
+  const handlePrescriptionSuccess = () => {
+    console.log('Prescription created successfully');
   };
 
   const filteredAppointments = appointments.filter(appointment => {
@@ -192,6 +204,19 @@ export default function AppointmentsPage() {
                               </Button>
                             </div>
                           )}
+
+                          {appointment.status === 'completed' && (
+                            <div className="flex flex-col space-y-2 ml-4">
+                              <Button
+                                size="sm"
+                                onClick={() => handleCreatePrescription(appointment)}
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                <FileText className="h-4 w-4 mr-1" />
+                                Create Prescription
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
@@ -201,6 +226,16 @@ export default function AppointmentsPage() {
             </TabsContent>
           </Tabs>
         </main>
+
+        <PrescriptionModal
+          appointment={selectedAppointment}
+          isOpen={isPrescriptionModalOpen}
+          onClose={() => {
+            setIsPrescriptionModalOpen(false);
+            setSelectedAppointment(null);
+          }}
+          onSuccess={handlePrescriptionSuccess}
+        />
       </div>
     </ProtectedRoute>
   );

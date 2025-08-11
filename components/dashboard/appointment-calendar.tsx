@@ -8,11 +8,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { PrescriptionModal } from './prescription-modal';
 import { Appointment } from '@/lib/types';
 import { mockApi } from '@/lib/mock-api';
 import { useAuth } from '@/contexts/auth-context';
 import { format, addDays, subDays } from 'date-fns';
-import { Clock, User, Phone, Mail, Trash2, Calendar as CalendarIcon, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Clock, User, Phone, Mail, Trash2, Calendar as CalendarIcon, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, FileText } from 'lucide-react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const localizer = momentLocalizer(moment);
@@ -44,6 +45,8 @@ export function AppointmentCalendar() {
   const [showInstructions, setShowInstructions] = useState(true);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
   const { state } = useAuth();
+  const [prescriptionAppointment, setPrescriptionAppointment] = useState<Appointment | null>(null);
+  const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
 
   useEffect(() => {
     fetchAppointments();
@@ -363,6 +366,16 @@ export function AppointmentCalendar() {
     } catch (error) {
       console.error('Failed to delete appointment:', error);
     }
+  };
+
+  const handleCreatePrescription = (appointment: Appointment) => {
+    setPrescriptionAppointment(appointment);
+    setIsPrescriptionModalOpen(true);
+    setIsEventModalOpen(false);
+  };
+
+  const handlePrescriptionSuccess = () => {
+    console.log('Prescription created successfully');
   };
 
   const CustomEvent = useCallback(({ event }: { event: CalendarEvent }) => {
@@ -688,6 +701,15 @@ export function AppointmentCalendar() {
                       Mark Complete
                     </Button>
                   )}
+                  {selectedEvent.resource.status === 'completed' && (
+                    <Button
+                      onClick={() => handleCreatePrescription(selectedEvent.resource)}
+                      className="flex-1 bg-green-600 hover:bg-green-700"
+                    >
+                      <FileText className="h-4 w-4 mr-1" />
+                      Create Prescription
+                    </Button>
+                  )}
                   <Button
                     onClick={() => handleDeleteAppointment(selectedEvent.resource.id)}
                     variant="outline"
@@ -701,6 +723,16 @@ export function AppointmentCalendar() {
           )}
         </DialogContent>
       </Dialog>
+
+      <PrescriptionModal
+        appointment={prescriptionAppointment}
+        isOpen={isPrescriptionModalOpen}
+        onClose={() => {
+          setIsPrescriptionModalOpen(false);
+          setPrescriptionAppointment(null);
+        }}
+        onSuccess={handlePrescriptionSuccess}
+      />
     </>
   );
 }

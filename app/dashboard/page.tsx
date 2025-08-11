@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { StatsCards } from '@/components/dashboard/stats-cards';
 import { RecentAppointments } from '@/components/dashboard/recent-appointments';
 import { AppointmentCalendar } from '@/components/dashboard/appointment-calendar';
+import { PrescriptionsList } from '@/components/dashboard/prescriptions-list';
 import { ProtectedRoute } from '@/components/layout/protected-route';
 import { Navbar } from '@/components/layout/navbar';
 import { useAuth } from '@/contexts/auth-context';
@@ -54,7 +55,7 @@ export default function DashboardPage() {
               </TabsContent>
               
               <TabsContent value="prescriptions" className="space-y-8">
-                
+                <PrescriptionsList />
               </TabsContent>
             </Tabs>
           </div>
