@@ -1,4 +1,5 @@
 import { Doctor, Appointment, Patient, PatientUser, DoctorListing, Prescription, Medication } from './types';
+import { PatientMedicalHistory } from './types';
 
 // Mock data
 const mockDoctor: Doctor = {
@@ -894,6 +895,100 @@ const mockPrescriptions: Prescription[] = [
   }
 ];
 
+// Mock Patient Medical History Data
+const mockPatientMedicalHistories: PatientMedicalHistory[] = [
+  {
+    id: '1',
+    firstName: 'Alice',
+    lastName: 'Johnson',
+    email: 'alice@example.com',
+    phone: '+1234567891',
+    age: 32,
+    gender: 'female',
+    bloodType: 'A+',
+    height: '5\'6"',
+    weight: '140 lbs',
+    medicalHistory: 'Previous history of mild hypertension. No major surgeries. Family history of heart disease.',
+    allergies: 'Penicillin, Shellfish',
+    emergencyContact: 'John Johnson (Husband) - +1234567899',
+    lastVisit: '2025-01-20',
+    totalVisits: 8,
+    registrationDate: '2023-03-15'
+  },
+  {
+    id: '2',
+    firstName: 'Bob',
+    lastName: 'Wilson',
+    email: 'bob@example.com',
+    phone: '+1234567892',
+    age: 52,
+    gender: 'male',
+    bloodType: 'O-',
+    height: '6\'0"',
+    weight: '180 lbs',
+    medicalHistory: 'Type 2 diabetes diagnosed in 2018. Previous heart surgery in 2020. Regular monitoring required.',
+    allergies: 'Aspirin, Latex',
+    emergencyContact: 'Mary Wilson (Wife) - +1234567893',
+    lastVisit: '2025-01-20',
+    totalVisits: 15,
+    registrationDate: '2022-08-10'
+  },
+  {
+    id: '3',
+    firstName: 'Carol',
+    lastName: 'Davis',
+    email: 'carol@example.com',
+    phone: '+1234567893',
+    age: 45,
+    gender: 'female',
+    bloodType: 'B+',
+    height: '5\'4"',
+    weight: '125 lbs',
+    medicalHistory: 'Anxiety disorder, managed with therapy. No significant physical health issues.',
+    allergies: 'None known',
+    emergencyContact: 'David Davis (Brother) - +1234567894',
+    lastVisit: '2025-01-21',
+    totalVisits: 5,
+    registrationDate: '2023-11-20'
+  },
+  {
+    id: '11',
+    firstName: 'Sarah',
+    lastName: 'Williams',
+    email: 'sarah@example.com',
+    phone: '+1234567801',
+    age: 38,
+    gender: 'female',
+    bloodType: 'AB+',
+    height: '5\'7"',
+    weight: '155 lbs',
+    medicalHistory: 'High cholesterol, managed with diet and medication. Regular exercise routine.',
+    allergies: 'Sulfa drugs',
+    emergencyContact: 'Michael Williams (Husband) - +1234567802',
+    lastVisit: '2025-01-15',
+    totalVisits: 6,
+    registrationDate: '2023-06-12'
+  },
+  {
+    id: '12',
+    firstName: 'Michael',
+    lastName: 'Brown',
+    email: 'michael@example.com',
+    phone: '+1234567802',
+    age: 29,
+    gender: 'male',
+    bloodType: 'A-',
+    height: '5\'10"',
+    weight: '170 lbs',
+    medicalHistory: 'No significant medical history. Occasional migraines.',
+    allergies: 'Peanuts, Tree nuts',
+    emergencyContact: 'Lisa Brown (Sister) - +1234567803',
+    lastVisit: '2025-01-16',
+    totalVisits: 3,
+    registrationDate: '2024-02-28'
+  }
+];
+
 // Mock API functions
 export const mockApi = {
   // Doctor Authentication
@@ -1130,5 +1225,16 @@ export const mockApi = {
     if (index !== -1) {
       mockPrescriptions.splice(index, 1);
     }
+  },
+
+  // Patient Medical History
+  getPatientMedicalHistory: async (patientId: string): Promise<PatientMedicalHistory | null> => {
+    await new Promise(resolve => setTimeout(resolve, 800));
+    return mockPatientMedicalHistories.find(history => history.id === patientId) || null;
+  },
+
+  getAllPatientMedicalHistories: async (): Promise<PatientMedicalHistory[]> => {
+    await new Promise(resolve => setTimeout(resolve, 600));
+    return mockPatientMedicalHistories;
   }
 };

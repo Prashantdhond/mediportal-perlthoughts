@@ -96,3 +96,22 @@ export interface Prescription {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface PatientMedicalHistory {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  age: number;
+  gender: 'male' | 'female' | 'other';
+  bloodType: string;
+  height: string;
+  weight: string;
+  medicalHistory: string;
+  allergies: string;
+  emergencyContact: string;
+  lastVisit: string;
+  totalVisits: number;
+  registrationDate: string;
+}

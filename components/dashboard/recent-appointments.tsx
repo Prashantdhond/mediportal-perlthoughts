@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { Clock, CheckCircle, XCircle, AlertCircle, FileText } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, AlertCircle, FileText, User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { PrescriptionModal } from './prescription-modal';
 import { Appointment } from '@/lib/types';
 import { mockApi } from '@/lib/mock-api';
+import Link from 'next/link';
 
 export function RecentAppointments() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -127,6 +128,16 @@ export function RecentAppointments() {
                             <FileText className="h-4 w-4 mr-1" />
                             Create Prescription
                           </Button>
+                          <Link href={`/patient-history/${appointment.patientId}`}>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="w-full"
+                            >
+                              <User className="h-4 w-4 mr-1" />
+                              Medical History
+                            </Button>
+                          </Link>
                         </div>
                       )}
                     </div>
@@ -161,7 +172,27 @@ export function RecentAppointments() {
                       >
                         Cancel
                       </Button>
+                      <Link href={`/patient-history/${appointment.patientId}`}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                        >
+                          <User className="h-4 w-4" />
+                        </Button>
+                      </Link>
                     </div>
+                  )}
+                  
+                  {(appointment.status === 'confirmed' || appointment.status === 'cancelled') && (
+                    <Link href={`/patient-history/${appointment.patientId}`}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                      >
+                        <User className="h-4 w-4 mr-1" />
+                        History
+                      </Button>
+                    </Link>
                   )}
                 </div>
               </div>
