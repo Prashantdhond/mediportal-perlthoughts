@@ -2,16 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { Users, Phone, Mail, Calendar, Search, FileText } from 'lucide-react';
+import { Users, Phone, Mail, Calendar, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ProtectedRoute } from '@/components/layout/protected-route';
 import { Navbar } from '@/components/layout/navbar';
-import Link from 'next/link';
 import { Patient } from '@/lib/types';
 import { mockApi } from '@/lib/mock-api';
 
@@ -125,14 +123,6 @@ export default function PatientsPage() {
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Total Visits:</span>
                         <span className="font-medium text-gray-900">{patient.totalVisits}</span>
-                      </div>
-                      <div className="mt-3">
-                        <Link href={`/patient-history/${patient.id}`}>
-                          <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
-                            <FileText className="h-4 w-4 mr-1" />
-                            View Medical History
-                          </Button>
-                        </Link>
                       </div>
                     </div>
                   </CardContent>

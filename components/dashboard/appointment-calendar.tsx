@@ -14,7 +14,6 @@ import { mockApi } from '@/lib/mock-api';
 import { useAuth } from '@/contexts/auth-context';
 import { format, addDays, subDays } from 'date-fns';
 import { Clock, User, Phone, Mail, Trash2, Calendar as CalendarIcon, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, FileText } from 'lucide-react';
-import Link from 'next/link';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const localizer = momentLocalizer(moment);
@@ -711,15 +710,6 @@ export function AppointmentCalendar() {
                       Create Prescription
                     </Button>
                   )}
-                  <Link href={`/patient-history/${selectedEvent.resource.patientId}`}>
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      <User className="h-4 w-4 mr-1" />
-                      Medical History
-                    </Button>
-                  </Link>
                   <Button
                     onClick={() => handleDeleteAppointment(selectedEvent.resource.id)}
                     variant="outline"
@@ -727,19 +717,6 @@ export function AppointmentCalendar() {
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
-                </div>
-              )}
-              {selectedEvent.start < new Date() && (
-                <div className="flex space-x-2 pt-4">
-                  <Link href={`/patient-history/${selectedEvent.resource.patientId}`}>
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      <User className="h-4 w-4 mr-1" />
-                      Medical History
-                    </Button>
-                  </Link>
                 </div>
               )}
             </div>

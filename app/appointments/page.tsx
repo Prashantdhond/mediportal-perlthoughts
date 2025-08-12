@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { Calendar, Clock, Phone, Mail, Search, FileText, User } from 'lucide-react';
+import { Calendar, Clock, Phone, Mail, Search, FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +12,6 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ProtectedRoute } from '@/components/layout/protected-route';
 import { Navbar } from '@/components/layout/navbar';
 import { PrescriptionModal } from '@/components/dashboard/prescription-modal';
-import Link from 'next/link';
 import { Appointment } from '@/lib/types';
 import { mockApi } from '@/lib/mock-api';
 
@@ -216,31 +215,6 @@ export default function AppointmentsPage() {
                                 <FileText className="h-4 w-4 mr-1" />
                                 Create Prescription
                               </Button>
-                              <Link href={`/patient-history/${appointment.patientId}`}>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="w-full"
-                                >
-                                  <User className="h-4 w-4 mr-1" />
-                                  Medical History
-                                </Button>
-                              </Link>
-                            </div>
-                          )}
-
-                          {(appointment.status === 'pending' || appointment.status === 'confirmed') && (
-                            <div className="flex flex-col space-y-2 ml-4">
-                              <Link href={`/patient-history/${appointment.patientId}`}>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="w-full"
-                                >
-                                  <User className="h-4 w-4 mr-1" />
-                                  Medical History
-                                </Button>
-                              </Link>
                             </div>
                           )}
                         </div>
