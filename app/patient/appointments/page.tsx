@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { Calendar, Clock, Phone, Mail, MapPin } from 'lucide-react';
+import { Calendar, Clock, Phone, Mail, MapPin, Star } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { PatientProtectedRoute } from '@/components/patient/patient-protected-route';
 import { PatientNavbar } from '@/components/patient/patient-navbar';
-import { Appointment } from '@/lib/types';
+import { ReviewModal } from '@/components/patient/review-modal';
+import { Appointment, DoctorListing } from '@/lib/types';
 import { mockApi } from '@/lib/mock-api';
 import { usePatientAuth } from '@/contexts/patient-auth-context';
 
@@ -18,6 +19,8 @@ export default function PatientAppointmentsPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('upcoming');
+  const [selectedDoctor, setSelectedDoctor] = useState<DoctorListing | null>(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const { state } = usePatientAuth();
 
   useEffect(() => {
@@ -36,6 +39,18 @@ export default function PatientAppointmentsPage() {
 
     fetchAppointments();
   }, [state.patient?.id]);
+
+  const handleReviewDoctor = async (appointment: Appointment) => {
+    try {
+      const doctor = await mockApi.getDoctorById(appointment.doctorId);
+      if (doctor) {
+        setSelectedDoctor(doctor);
+        setIsReviewModalOpen(true);
+      }
+    } catch (error) {
+      console.error('Failed to fetch doctor details:', error);
+    }
+  };
 
   const now = new Date();
   const upcomingAppointments = appointments.filter(apt => 
@@ -117,6 +132,19 @@ export default function PatientAppointmentsPage() {
                     </Button>
                   </div>
                 )}
+
+                {appointment.status === 'completed' && (
+                  <div className="ml-4">
+                    <Button
+                      size="sm"
+                      onClick={() => handleReviewDoctor(appointment)}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <Star className="h-4 w-4 mr-1" />
+                      Review Doctor
+                    </Button>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -162,6 +190,15 @@ export default function PatientAppointmentsPage() {
             </TabsContent>
           </Tabs>
         </main>
+
+        <ReviewModal
+          doctor={selectedDoctor}
+          isOpen={isReviewModalOpen}
+          onClose={() => {
+            setIsReviewModalOpen(false);
+            setSelectedDoctor(null);
+          }}
+        />
       </div>
     </PatientProtectedRoute>
   );

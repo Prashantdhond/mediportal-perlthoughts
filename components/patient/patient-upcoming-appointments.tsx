@@ -2,17 +2,21 @@
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { Clock, Calendar, MapPin } from 'lucide-react';
+import { Clock, Calendar, MapPin, Star } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { Appointment } from '@/lib/types';
+import { ReviewModal } from '@/components/patient/review-modal';
+import { Appointment, DoctorListing } from '@/lib/types';
 import { mockApi } from '@/lib/mock-api';
 import { usePatientAuth } from '@/contexts/patient-auth-context';
 
 export function PatientUpcomingAppointments() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedDoctor, setSelectedDoctor] = useState<DoctorListing | null>(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const { state } = usePatientAuth();
 
   useEffect(() => {
@@ -34,6 +38,18 @@ export function PatientUpcomingAppointments() {
 
     fetchAppointments();
   }, [state.patient?.id]);
+
+  const handleReviewDoctor = async (appointment: Appointment) => {
+    try {
+      const doctor = await mockApi.getDoctorById(appointment.doctorId);
+      if (doctor) {
+        setSelectedDoctor(doctor);
+        setIsReviewModalOpen(true);
+      }
+    } catch (error) {
+      console.error('Failed to fetch doctor details:', error);
+    }
+  };
 
   const getStatusColor = (status: Appointment['status']) => {
     switch (status) {
@@ -62,47 +78,81 @@ export function PatientUpcomingAppointments() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Upcoming Appointments</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {appointments.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">No upcoming appointments</p>
-          ) : (
-            appointments.map((appointment) => (
-              <div
-                key={appointment.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <div className="flex-1 min-w-0">
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Upcoming Appointments</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {appointments.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">No upcoming appointments</p>
+            ) : (
+              appointments.map((appointment) => (
+                <div
+                  key={appointment.id}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-3">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          Dr. John Smith {/* This would be actual doctor name */}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {format(new Date(`${appointment.date}T${appointment.time}`), 'MMM d, yyyy - h:mm a')}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4 mt-2">
+                      <div className="flex items-center space-x-1 text-xs text-gray-500">
+                        <MapPin className="h-3 w-3" />
+                        <span>Heart Care Clinic</span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1 truncate">
+                      {appointment.symptoms}
+                    </p>
+                  </div>
+                  
                   <div className="flex items-center space-x-3">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        Dr. John Smith {/* This would be actual doctor name */}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {format(new Date(`${appointment.date}T${appointment.time}`), 'MMM d, yyyy - h:mm a')}
-                      </p>
-                    </div>
+                    <Badge className={getStatusColor(appointment.status)}>
+                      <div className="flex items-center space-x-1">
+                        <Clock className="h-3 w-3" />
+                        <span className="capitalize">{appointment.status}</span>
+                      </div>
+                    </Badge>
+                    
+                    {appointment.status === 'completed' && (
+                      <Button
+                        size="sm"
+                        onClick={() => handleReviewDoctor(appointment)}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        <Star className="h-3 w-3 mr-1" />
+                        Review
+                      </Button>
+                    )}
                   </div>
-                  <div className="flex items-center space-x-4 mt-2">
-                    <div className="flex items-center space-x-1 text-xs text-gray-500">
-                      <MapPin className="h-3 w-3" />
-                      <span>Heart Care Clinic</span>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-1 truncate">
-                    {appointment.symptoms}
-                  </p>
                 </div>
-                
-                <div className="flex items-center space-x-3">
-                  <Badge className={getStatusColor(appointment.status)}>
-                    <div className="flex items-center space-x-1">
-                      <Clock className="h-3 w-3" />
-                      <span className="capitalize">{appointment.status}</span>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <ReviewModal
+        doctor={selectedDoctor}
+        isOpen={isReviewModalOpen}
+        onClose={() => {
+          setIsReviewModalOpen(false);
+          setSelectedDoctor(null);
+        }}
+      />
+    </>
+  );
+}
+
                     </div>
                   </Badge>
                 </div>

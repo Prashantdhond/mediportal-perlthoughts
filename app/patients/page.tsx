@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { Users, Phone, Mail, Calendar, Search } from 'lucide-react';
+import { Users, Phone, Mail, Calendar, Search, History } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ProtectedRoute } from '@/components/layout/protected-route';
 import { Navbar } from '@/components/layout/navbar';
+import { PatientHistoryModal } from '@/components/dashboard/patient-history-modal';
 import { Patient } from '@/lib/types';
 import { mockApi } from '@/lib/mock-api';
 
@@ -17,6 +19,8 @@ export default function PatientsPage() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -32,6 +36,11 @@ export default function PatientsPage() {
 
     fetchPatients();
   }, []);
+
+  const handleViewHistory = (patient: Patient) => {
+    setSelectedPatient(patient);
+    setIsHistoryModalOpen(true);
+  };
 
   const filteredPatients = patients.filter(patient =>
     patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -120,9 +129,20 @@ export default function PatientsPage() {
                     </div>
 
                     <div className="pt-4 border-t border-gray-200">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Total Visits:</span>
-                        <span className="font-medium text-gray-900">{patient.totalVisits}</span>
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm">
+                          <span className="text-gray-500">Total Visits:</span>
+                          <span className="font-medium text-gray-900 ml-2">{patient.totalVisits}</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleViewHistory(patient)}
+                          className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                        >
+                          <History className="h-4 w-4 mr-1" />
+                          History
+                        </Button>
                       </div>
                     </div>
                   </CardContent>
@@ -131,6 +151,15 @@ export default function PatientsPage() {
             </div>
           )}
         </main>
+
+        <PatientHistoryModal
+          patient={selectedPatient}
+          isOpen={isHistoryModalOpen}
+          onClose={() => {
+            setIsHistoryModalOpen(false);
+            setSelectedPatient(null);
+          }}
+        />
       </div>
     </ProtectedRoute>
   );

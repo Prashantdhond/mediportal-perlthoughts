@@ -96,3 +96,14 @@ export interface Prescription {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Review {
+  id: string;
+  doctorId: string;
+  patientId: string;
+  patientName: string;
+  rating: number;
+  comment?: string;
+  date: string;
+  createdAt: string;
+}

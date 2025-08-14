@@ -1,4 +1,4 @@
-import { Doctor, Appointment, Patient, PatientUser, DoctorListing, Prescription, Medication } from './types';
+import { Doctor, Appointment, Patient, PatientUser, DoctorListing, Prescription, Medication, Review } from './types';
 
 // Mock data
 const mockDoctor: Doctor = {
@@ -894,6 +894,30 @@ const mockPrescriptions: Prescription[] = [
   }
 ];
 
+// Mock Reviews Data
+const mockReviews: Review[] = [
+  {
+    id: '1',
+    doctorId: '1',
+    patientId: '1',
+    patientName: 'Alice Johnson',
+    rating: 5,
+    comment: 'Excellent doctor! Very thorough and caring.',
+    date: '2025-01-15',
+    createdAt: '2025-01-15T10:00:00Z'
+  },
+  {
+    id: '2',
+    doctorId: '1',
+    patientId: '2',
+    patientName: 'Bob Wilson',
+    rating: 4,
+    comment: 'Great experience, would recommend.',
+    date: '2025-01-10',
+    createdAt: '2025-01-10T14:00:00Z'
+  }
+];
+
 // Mock API functions
 export const mockApi = {
   // Doctor Authentication
@@ -1130,5 +1154,25 @@ export const mockApi = {
     if (index !== -1) {
       mockPrescriptions.splice(index, 1);
     }
+  },
+
+  // Reviews
+  getReviews: async (doctorId: string): Promise<Review[]> => {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return mockReviews.filter(review => review.doctorId === doctorId);
+  },
+
+  submitReview: async (reviewData: { doctorId: string; rating: number; comment?: string }): Promise<Review> => {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const newReview: Review = {
+      id: Date.now().toString(),
+      ...reviewData,
+      patientId: '1', // Would come from auth context
+      patientName: 'Current Patient', // Would come from auth context
+      date: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString()
+    };
+    mockReviews.push(newReview);
+    return newReview;
   }
 };
